@@ -61,6 +61,7 @@ fun BirthdayCardPreview() {
 The Composable function is annotated with the `@Composable` annotation; this annotation informs the Compose compiler that this function is intended to convert data into UI.
 #### **Arrange the text elements in a row and column**
 The three basic standard layout elements in Compose are `Column`, `Row`, and `Box`. They are Composable functions that take Composable content, so you can place items inside. For example, each child within a `Row` will be placed horizontally next to each other.
+
 ![](assets/imgs/example-arrange-the-text-elements.png)
 ### Add images to your Android app
 * The `Resource Manager` tab in Android Studio helps you add and organize your images and other resources.
