@@ -32,6 +32,10 @@ This is a guie brown whit the propose to help me and others when you need to rev
       -[Higher-order functions with collections](#Higher-order-functions-with-collections)
     - [Build a scrollable list](#Build-a-scrollable-list)
     - [Build beautiful apps](#Build-beautiful-apps)
+  - [Unit 4: Navigation and app architecture](#Unit-4:-Navigation-and-app-architecture)
+    - [Architecture Components](#Architecture-Components)
+    - [Navigation in Jetpack Compose](#Navigation-in-Jetpack-Compose)
+    - [Adapt for different screen sizes](#Adapt-for-different-screen-sizes)
 
 - [Android quizzes (lvl: Beginner)](#Android-quizzes-(lvl:-Beginner))
 
@@ -43,12 +47,16 @@ This is a guie brown whit the propose to help me and others when you need to rev
   - [Unit 2:](#Unit-2:)
     - [Kotlin fundamentals(quiz 1)](#Kotlin-fundamentals(quiz-1))
     - [Add a button to an app(quiz 2)](#Add-a-button-to-an-app(quiz-2))
-    - [Interacting with UI and state(quiz 3)](#Interacting-with-UI-and-state(quiz 3))
+    - [Interacting with UI and state(quiz 3)](#Interacting-with-UI-and-state(quiz-3))
 
   - [Unit 3:](#Unit-3:)
     - [More Kotlin fundamentals(quiz 1)](#More-Kotlin-fundamentals(quiz-1))
     - [Build a scrollable list(quiz 2)](#Build-a-scrollable-list(quiz-2))
     - [Build beautiful apps(quiz 3)](#Build-beautiful-apps(quiz-3))
+  - [Unit 4:](#Unit-4:)
+    - [Architecture Components(quiz 1)](#Architecture-Components(quiz-1))
+    - [Navigation in Jetpack Compose(quiz 2)](#Navigation-in-Jetpack-Compose(quiz-2))
+    - [Adapt for different screen sizes(quiz 3)](#Adapt-for-different-screen-sizes(quiz-3))
 
 # Android Basics with Compose (lvl: Beginner)
 
@@ -883,7 +891,44 @@ alphabeticalMenu.forEach {
 * Adaptive icons were introduced to the Android platform in API 26. They are made up of a foreground and background layer that follow specific requirements, so that your app icon looks high-quality on a range of devices with different OEM masks.
 * Use Image Asset Studio in Android Studio to create legacy and adaptive icons for your app.
 
+
+## Build beautiful apps
+#### **Add Color**
+You may wonder what all these roles are and how they are utilized, here are a few of the main ones:
+
+* The **primary** colors are used for key components across the UI.
+* The **secondary** colors are used for less prominent components in the UI.
+* The **tertiary** colors are used for contrasting accents that can be used to balance primary and secondary colors or bring heightened attention to an element, such as an input field.
+* The **on** color elements appear **on top** of other colors in the palette, and are primarily applied to text, iconography, and strokes. In our color palette, we have an **onSurface** color, which appears on top of the **surface** color, and an **onPrimary** color, which appears on top of the **primary** color.
+
+#### **Add typography**
+**The Material Design type scale**
+
+A type scale is a selection of font styles that can be used across an app, ensuring a flexible, yet consistent, style. The [Material Design type scale](https://m3.material.io/styles/typography/type-scale-tokens) includes fifteen font styles that are supported by the type system. The naming and grouping have been simplified to: display, headline, title, body, and label, with large, medium, and small sizes for each. You only need to use these choices if you want to customize your app. If you don't know what to set for each type scale category, know that there is a default typography scale that you can use.
+
+![](assets/imgs/font-size-with-material-design.png)
+
+`Display:` As the largest text on the screen, display styles are reserved for short, important text or numerals. They work best on large screens.
+
+`Headline:` Headlines are best-suited for short, high-emphasis text on smaller screens. These styles can be good for marking primary passages of text or important regions of content.
+
+`Title:` Titles are smaller than headline styles, and should be used for medium-emphasis text that remains relatively short.
+
+`Body:` Body styles are used for longer passages of text in your app.
+
+`Label:` Label styles are smaller, utilitarian styles, used for things like the text inside components or for very small text in the content body, such as captions.
+
+#### **Add a top bar**
+
+A `Scaffold` is a layout that provides slots for various components and screen elements, such as an `Image`, `Row`, or `Column`. A `Scaffold` also provides a slot for a `TopAppBar`, which you will use in this section.
+
+A `TopAppBar` can be used for many purposes, but in this case, you will use it for branding and to give your app personality. There are four different types of `TopAppBar`: center, small, medium and large. In this codelab you will implement a center top app bar. You will create a composable that looks like the screenshot below, and slot it into the `topBar` section of a `Scaffold`.
+
+## Unit 4: Navigation and app architecture
+## Architecture Components
+
 # Android quizzes (lvl: Beginner)
+
 
 ## Unit 1:
 ### Introduction to Kotlin(quiz 1)
@@ -1333,3 +1378,70 @@ val colors = listOf("Red", "Green", "Blue")
  - `Card`
  - `Image`
  - `Row`
+### Build beautiful apps(quiz 3)
+1. Animations in your Android app can:
+- Add visual cues about what's going on in your app.
+- Add a polished look to your app.
+- Help the user see what changed.
+- 🟢 All of the above. 🟢
+
+2. Spring animation is based on:
+- Start and end values over the specified duration.
+- 🟢 Damping ratio and stiffness. 🟢
+- Snapshot values specified at different timestamps.
+- Interpolation between two keyframe values.
+
+3. Spring animation is a physics-based animation driven by spring force.
+- 🟢 True 🟢
+- False
+
+4. In the Material theming, the ___ color is the color displayed most frequently across your app's screens and components.
+- 🟢 primary 🟢
+- secondary
+- surface
+- background
+
+5. The following file is used to define shapes of components in Compose.
+- `Theme.kt`
+- `Color.kt`
+- 🟢 `Shape.kt` 🟢
+- `Colors.kt`
+
+6. You can only have one `@Preview` composable.
+- True
+- 🟢 False 🟢
+
+7. A hex color code starts with a pound (#) character, and is followed by six letters and/or numbers that represent the red, green, and blue (RGB) components of that color.
+- 🟢 True 🟢
+- False
+
+8. The ___ file is the file that holds all the information about the theme of the app which is defined through color, shape, and typography.
+- 🟢 Theme.kt 🟢
+- Color.kt
+- Shape.kt
+- Colors.kt
+
+9. ___ creates contrast between the Card and the background by adding a shadow to make the app look more realistic and visually interesting.
+- 🟢 Elevation 🟢
+- Shape
+- Color
+- Theme
+
+10. What are reasons that someone may use Dark Theme on their device?
+- It can reduce power usage by a significant amount (depending on the device’s screen technology).
+- It improves visibility for users with low vision and those who are sensitive to bright light.
+- It makes it easier for anyone to use a device in a low-light environment.
+- 🟢 All of the above. 🟢
+
+11. TalkBack allows a user to navigate an app using switches instead of the touchscreen.
+- True
+- 🟢 False 🟢
+
+12. Which attribute allows TalkBack to speak a meaningful representation of an image or icon?
+- `elevation`
+- `shape`
+- 🟢 `contentDescription` 🟢
+- `style`
+
+## Unit 4:
+### Architecture Components(quiz 1)
