@@ -32,10 +32,15 @@ This is a guie brown whit the propose to help me and others when you need to rev
       -[Higher-order functions with collections](#Higher-order-functions-with-collections)
     - [Build a scrollable list](#Build-a-scrollable-list)
     - [Build beautiful apps](#Build-beautiful-apps)
+
   - [Unit 4: Navigation and app architecture](#Unit-4:-Navigation-and-app-architecture)
     - [Architecture Components](#Architecture-Components)
     - [Navigation in Jetpack Compose](#Navigation-in-Jetpack-Compose)
     - [Adapt for different screen sizes](#Adapt-for-different-screen-sizes)
+
+  - [Unit 5: Connect to the internet](#Unit-5:-Connect-to-the-internet)
+    - [Get data from the internet](#Get-data-from-the-internet)
+    - [Load and display images from the internet](#Load-and-display-images-from-the-internet)
 
 - [Android quizzes (lvl: Beginner)](#Android-quizzes-(lvl:-Beginner))
 
@@ -53,10 +58,15 @@ This is a guie brown whit the propose to help me and others when you need to rev
     - [More Kotlin fundamentals(quiz 1)](#More-Kotlin-fundamentals(quiz-1))
     - [Build a scrollable list(quiz 2)](#Build-a-scrollable-list(quiz-2))
     - [Build beautiful apps(quiz 3)](#Build-beautiful-apps(quiz-3))
+
   - [Unit 4:](#Unit-4:)
     - [Architecture Components(quiz 1)](#Architecture-Components(quiz-1))
     - [Navigation in Jetpack Compose(quiz 2)](#Navigation-in-Jetpack-Compose(quiz-2))
     - [Adapt for different screen sizes(quiz 3)](#Adapt-for-different-screen-sizes(quiz-3))
+
+  - [Unit 5:](#Unit-5:)
+  - [Get data from the internet(quiz 1)](#Get-data-from-the-internet(quiz-1))
+    - [Load and display images from the internet(quiz 2)](#Load-and-display-images-from-the-internet(quiz-2))
 
 # Android Basics with Compose (lvl: Beginner)
 
@@ -1089,7 +1099,80 @@ A good unit test typically has following four properties:
 * `Self-contained:` It does not require any human interaction or setup and runs in isolation.
 
 ## Navigation in Jetpack Compose
-### ???
+### Define routes and create a NavHostController
+**Parts of the Navigation Component**
+The Navigation component has three main parts:
+
+* `NavController:` Responsible for navigating between destinations—that is, the screens in your app.
+* `NavGraph:` Maps composable destinations to navigate to.
+* `NavHost:` Composable acting as a container for displaying the current destination of the NavGraph.
+
+In this codelab, you'll focus on the NavController and the NavHost. Within the NavHost, you'll define the destinations for the Cupcake app's NavGraph.
+
+**Define routes for destinations in your app**
+
+One of the fundamental concepts of navigation in a Compose app is the route. A route is a string that corresponds to a destination. This idea is similar to the concept of a URL. Just as a different URL maps to a different page on a website, a route is a string that maps to a destination and serves as its unique identifier. A destination is typically a single Composable or group of Composables corresponding to what the user sees. The Cupcake app needs destinations for the start order screen, the flavor screen, the pickup date screen, and the order summary screen.
+
+**Add a NavHost to your app**
+
+A NavHost is a Composable that displays other composable destinations, based on a given route.
+The syntax for `NavHost` is just like any other Composable.
+![](assets/imgs/navHost-syntax.png)
+There are two notable parameters.
+
+* `navController:` An instance of the `NavHostController` class. You can use this object to navigate between screens, for example, by calling the `navigate()` method to navigate to another destination. You can obtain the `NavHostController` by calling `rememberNavController()` from a composable function.
+* `startDestination:` A string route defining the destination shown by default when the app first displays the `NavHost`. In the case of the Cupcake app, this should be the `Start` route.
+
+Like other composables, `NavHost` also takes a `modifier` parameter.
+
+
+**Note:** `NavHostController` is a subclass of the NavController class that provides additional functionality for use with a NavHost composable.
+
+**Handle routes in your NavHost**
+
+Like other composables, `NavHost` takes a function type for its content.
+![](assets/imgs/routes-in-your-NacHost.png)
+Within the content function of a `NavHost`, you call the `composable()`
+function. The `composable()` function has two required parameters.
+
+* `route:` A string corresponding to the name of a route. This can be any unique string. You'll use the name property of the `CupcakeScreen` enum's constants.
+* `content:` Here you can call a composable that you want to display for the given route.
+
+You'll call the `composable()` function once for each of the four routes.
+
+**Note:** The `composable()` function is an extension function of `NavGraphBuilder`.
+
+**Pop to the start screen**
+
+Unlike the system back button, the `Cancel` button doesn't go back to the previous screen. Instead, it should pop—remove—all screens from the back stack and return to the starting screen.
+
+You can do this by calling the `popBackStack()` method.
+
+```kotlin
+navController.popBackStack(route,inclusive)
+```
+
+The `popBackStack()` method has two required parameters.
+
+* `route:` The string representing the route of the destination you want to navigate back to.
+* `inclusive:` A Boolean value that, if true, also pops (removes) the specified route. If false, `popBackStack()` will remove all destinations on top of—but not including—the start destination, leaving it as the topmost screen visible to the user.
+![](assets/imgs/the-Back-and-Up-buttons.png)
+
+**What are breakpoints?**
+
+You may wonder how you can show different layouts for the same app. The short answer is by using conditionals on different states, the way you did in the beginning of this codelab.
+![](assets/imgs/layout-adapt-to-different-screen-sizes.png)
+
+#### **Use Window Size Classes**
+
+The `WindowSizeClass` API introduced for Compose makes the implementation of Material Design breakpoints simpler.
+
+Window Size Classes introduces three categories of sizes: Compact, Medium, and Expanded, for both width and height.
+![](assets/imgs/widht-hegith-screen-size.png)
+
+## Unit 5: Your first Android app
+## Get data from the internet
+## Load and display images from the internet
 
 # Android quizzes (lvl: Beginner)
 
@@ -1660,3 +1743,121 @@ val colors = listOf("Red", "Green", "Blue")
 - True
 - 🟢 False 🟢
 ### Navigation in Jetpack Compose(quiz 2)
+1. A route is defined with a(n) ___ data type.
+- `@Composable` function
+- `NavHost.Route`
+- 🟢 `String` 🟢
+- `NavRoute`
+
+2. With a `NavHost`, you must explicitly specify a starting screen.
+- 🟢 True 🟢
+- False
+
+3. It’s considered best practice to not pass a `NavHostController` to individual composables.
+- 🟢 True 🟢
+- False
+
+4. ___ is a composable that manages which screen is displayed based on a given route.
+- `NavController`
+- `NavHostController`
+- 🟢 `NavHost` 🟢
+- `ComposableNavigator`
+
+5. The `composable()` function called in a `NavHost` takes which two parameters?
+- Destination content and a route
+- 🟢 A route and composable content 🟢
+- A path and a composable
+- Composable content and an intent.
+
+6. You can change the currently displayed route using the ___ method.
+- `update()`
+- `composable()`
+- `transition()`
+- 🟢 `navigate()` 🟢
+
+7. The ___ method removes one or more screens from the backstack.
+- `popToStartDestination()`
+- 🟢 `popBackStack()` 🟢
+- `popComposable()`
+- `popToBackStack()`
+
+8. In a multi-screen app, navigating to a new screen puts it on the bottom of the backstack.
+- 🟢 False 🟢
+- True
+
+9. Intent ___ contain additional data passed to an Intent.
+- arguments
+- 🟢 extras 🟢
+- parameters
+- properties
+
+10. `StateFlow` is a data-holder observable flow that emits the current and new state updates.
+- 🟢 True 🟢
+- False
+
+11. Which of the following are true about the Back and Up buttons? *(Choose all that apply)*
+- 🟢 The Back button is a system button 🟢
+- The Up button is provided by the system at the bottom of the screen
+- The Back button is part of the `AppBar`
+- The Up button in the `AppBar` automatically navigates to the previous screen.
+- The Back button only appears if you use navigation.
+- 🟢 The Up button can be shown or hidden, depending on the current screen. 🟢
+### Adapt for different screen sizes(quiz 3)
+1. The ___ composable is used to respond to the Back button, with or without a `NavHost`.
+- `BackButton`
+- 🟢 `BackHandler` 🟢
+- `BackNavigator`
+- `BackStack`
+
+2. Which of the following are true about designing for larger screens? *(Choose all that apply)*
+- 🟢 Button positioning is more important on larger screen sizes. 🟢
+- Usually no changes are needed to the UI layout to make the app work well for larger screen sizes.
+- 🟢 Adding another layout to the same screen removes the need to navigate between screens. 🟢
+- 🟢 Large screen layouts should avoid placing commonly used buttons in the center of the screen. 🟢
+
+3. A ___ is a specific measurement of width or height where an app's layout should change.
+- window class
+- layout point
+- size bucket
+- 🟢 breakpoint 🟢
+
+4. The compact width window size class generally refers to smaller devices, such as phones in portrait mode.
+- 🟢 True 🟢
+- False
+
+5. The ___ API makes the implementation of adaptive layouts simpler.
+- `SizeClass`
+- `WindowSizeState`
+- `SizeBucket`
+- 🟢 `WindowSizeClass` 🟢
+
+6. A navigation rail is often appropriate for ___ width layouts.
+- compact
+- standard
+- 🟢 medium 🟢
+- expanded
+
+7. When building apps with adaptive layouts, you should use a single preview for each screen.
+- True
+- 🟢 False 🟢
+
+8. The list-detail layout requires Back navigation on compact screens, but not on screens where both the list and detail screens are shown at once.
+- 🟢 True 🟢
+- False
+
+9. Assume you have a contacts app that displays a list of contacts and has details to show for each contact. What are appropriate ways to adapt the UI to different screen sizes? *(Choose all that apply)*
+- 🟢 Use the list-detail layout to show one pane or two panes side-by-side depending on the available width of the screen. 🟢
+- The list items should take up the full width of the screen, regardless of how narrow or wide the screen is.
+- The Up button should always be shown within the app and clicking the button should exit the app.
+- When rotating the device, the selected item in the list (and the corresponding details of that item shown) should be reset to the first item in the list.
+- It’s required to use the Jetpack Navigation Component to make the UI responsive to different screen sizes.
+
+10. Tests can be configured to run only test functions with custom annotations by configuring the ___.
+- module
+- package
+- instrumentation class
+- 🟢 instrumentation arguments 🟢
+
+## Unit 5:
+### Get data from the internet(quiz 1)
+### Load and display images from the internet(quiz 2)
