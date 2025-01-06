@@ -926,9 +926,172 @@ A `TopAppBar` can be used for many purposes, but in this case, you will use it f
 
 ## Unit 4: Navigation and app architecture
 ## Architecture Components
+### Explore the lifecycle methods and add basic logging
+
+#### Explore the lifecycle methods and add basic logging
+Similarly, the activity lifecycle consists of the different states that an activity can go through, from when the activity first initializes to its destruction, at which time the operating system (OS) reclaims its memory. Typically, the entry point of a program is the `main()` method. Android activities, however, begin with the `onCreate()` method; this method would be the equivalent of the egg stage in the above example. You have used activities already, many times throughout this course, and you might recognize the `onCreate()` method. As the user starts your app, navigates between activities, navigates inside and outside of your app, the activity changes state.
+
+![](assets/imgs/the-activity-lifecycle.png)
+
+Often, you want to change some behavior, or run some code, when the activity lifecycle state changes. Therefore, the `Activity` class itself, and any subclasses of `Activity` such as `ComponentActivity`, implement a set of lifecycle callback methods. Android invokes these callbacks when the activity moves from one state to another, and you can override those methods in your own activities to perform tasks in response to those lifecycle state changes. The following diagram shows the lifecycle states along with the available overridable callbacks.
+
+**Step 1: Examine the `onCreate()` method and add logging**
+A simple way to determine this information is to use the Android logging functionality. Logging enables you to write short messages to a console while the app runs and use it to see when different callbacks are triggered.
+
+Run the Dessert Clicker app and tap several times on the picture of the dessert. Note how the value for **Desserts sold** and the total dollar amount changes.
+Open `MainActivity.kt` and examine the `onCreate()` method for this activity:
+````kotlin
+override fun onCreate(savedInstanceState: Bundle?) {
+    // ...
+}
+````
+In the activity lifecycle diagram, you may recognize the `onCreate()` method, because you've used this callback before. It's the one method that every activity must implement. The `onCreate()` method is where you should do any one-time initializations for your activity. For example, in `onCreate()`, you call `setContent()`, which specifies the activity's UI layout.
+The `onCreate()` lifecycle method is called once, just after the activity initializes—when the OS creates the new `Activity` object in memory. After `onCreate()` executes, the activity is considered created.
+
+The `Log` class writes messages to the `Logcat`. The `Logcat` is the console for logging messages. Messages from Android about your app appear here, including the messages you explicitly send to the log with the `Log.d()` method or other `Log` class methods.
+
+There are three important aspects of the `Log` instruction:
+
+* The `priority` of the log message, that is, how important the message is. In this case, the `Log.v()` logs verbose messages. `Log.d()` method writes a debug message. Other methods in the `Log` class include `Log.i()` for informational messages, `Log.w()` for warnings, and `Log.e()` for error messages.
+
+* The log `tag` (the first parameter), in this case `"MainActivity"`. The tag is a string that lets you more easily find your log messages in the Logcat. The tag is typically the name of the class.
+
+* The actual log message, called `msg` (the second parameter), is a short string, which in this case is `"onCreate Called"`.
+
+![](assets/imgs/example-type-Log.png)
+
+**Step 2: Implement the `onStart()` method**
+The `onStart()` lifecycle method is called just after `onCreate()`. After `onStart()` runs, your activity is visible on the screen. Unlike `onCreate()`, which is called only once to initialize your activity, `onStart()`can be called by the system many times in the lifecycle of your activity.
+
+Note that `onStart()`is paired with a corresponding `onStop()`lifecy
+cle method. If the user starts your app and then returns to the device's home screen, the activity is stopped and is no longer visible on screen.
+
+1. In Android Studio, with `MainActivity.kt` open and the cursor within the `MainActivity` class, select Code > Override Methods... or press `Control+O`. A dialog appears with a long list of all the methods you can override in this class.
+2. Start entering `onStart` to search for the correct method. To scroll to the next matching item, use the down arrow. Choose `onStart() `from the list and click OK to insert the boilerplate override code. The code looks like the following example:
+
+```kotlin
+override fun onStart() {
+    super.onStart()
+}
+```
+3. Inside the `onStart()` method, add a log message:
+```kotlin
+override fun onStart() {
+  super.onStart()
+  Log.d(TAG, "onStart Called")
+}
+```
+4. Compile and run the Dessert Clicker app and open the `Logcat` pane.
+5. Type `tag:MainActivity` into the search field to filter the log. Notice that both the `onCreate()` and `onStart()` methods were called one after the other, and that your activity is visible on screen.
+6. Press the `Home` button on the device and then use the Recents screen to return to the activity. Notice that the activity resumes where it left off, with all the same values, and that `onStart()` is logged a second time to Logcat. Notice also that the `onCreate()` method is not called again.
+
+**Step 3: Add more log statements**
+In this step, you implement logging for all the other lifecycle methods.
+
+Override the remainder of the lifecycle methods in your `MainActivity` and add log statements for each one, as shown in the following code:
+
+```kotlin
+override fun onResume() {
+    super.onResume()
+    Log.d(TAG, "onResume Called")
+}
+
+override fun onRestart() {
+    super.onRestart()
+    Log.d(TAG, "onRestart Called")
+}
+
+override fun onPause() {
+    super.onPause()
+    Log.d(TAG, "onPause Called")
+}
+
+override fun onStop() {
+    super.onStop()
+    Log.d(TAG, "onStop Called")
+}
+
+override fun onDestroy() {
+    super.onDestroy()
+    Log.d(TAG, "onDestroy Called")
+}
+```
+2. Compile and run Dessert Clicker again and examine Logcat.
+Notice that this time, in addition to `onCreate()` and `onStart()`, there's a log message for the `onResume()` lifecycle callback.
+When an activity starts from the beginning, you see all three of these lifecycle callbacks called in order:
+
+* `onCreate()` when the system creates the app.
+* `onStart()` makes the app visible on the screen, but the user is not yet able to interact with it.
+* `onResume()` brings the app to the foreground, and the user is now able to interact with it.
+
+Despite the name, the `onResume()` method is called at startup, even if there is nothing to resume.
+
+#### **7. Summary**
+
+**Activity lifecycle**
+* The activity lifecycle is a set of states through which an activity transitions. The activity lifecycle begins when the Android OS first creates the activity and ends when the OS destroys the activity.
+* As the user navigates between activities, and inside and outside of your app, each activity moves between states in the activity lifecycle.
+* Each state in the activity lifecycle has a corresponding callback method you can override in your Activity class. The core set of lifecycle methods are: `onCreate()`, `onRestart()`, `onStart()`, `onResume()`, `onPause()`, `onStop()`, `onDestroy()`.
+* To add behavior that occurs when your activity transitions into a lifecycle state, override the state's callback method.
+* To add skeleton override methods to your classes in Android Studio, select `Code > Override Methods...` or press `Control+O`.
+
+**Logging with Log**
+
+* The Android logging API, and specifically the `Log` class, enables you to write short messages that are displayed in the Logcat within Android Studio.
+Use `Log.d()` to write a debug message. This method takes two arguments: the log tag, typically the name of the class, and the log message, a short string.
+* Use the `Logcat` window in Android Studio to view the system logs, including the messages you write.
+
+**Configuration changes**
+
+* A configuration change occurs when the state of the device changes so radically that the easiest way for the system to resolve the change is to destroy and rebuild the activity.
+* The most common example of a configuration change is when the user rotates the device from portrait to landscape mode, or from landscape to portrait mode. A configuration change can also occur when the device language changes or a user plugs in a hardware keyboard.
+* When a configuration change occurs, Android invokes all the activity lifecycle's shutdown callbacks. Android then restarts the activity from scratch, running all the lifecycle startup callbacks.
+* When Android shuts down an app because of a configuration change, it restarts the activity with `onCreate()`.
+To save a value that needs to survive a configuration change, declare its variables with `rememberSaveable`.
+
+### **Architecture: The UI Layer**
+
+![](assets/imgs/app-architecture.png)
+![](assets/imgs/ui-layer-pipeline.png)
+![](assets/imgs/ui-layer-concepts.png)
+![](assets/imgs/what-is-the-ui.png)
+![](assets/imgs/viewModel-as-a-state-holder.png)
+![](assets/imgs/unidirectional-data-flow-example.png)
+
+### Write unit tests for ViewModel
+
+A good test strategy revolves around covering different paths and boundaries of your code. At a very basic level, you can categorize the tests in three scenarios: success path, error path, and boundary case.
+
+* `Success path:` The success path tests - also known as happy path tests, focus on testing the functionality for a positive flow. A positive flow is a flow that has no exception or error conditions. Compared to the error path and boundary case scenarios, it is easy to create an exhaustive list of scenarios for success paths, since they focus on intended behavior for your app.
+
+An example of a success path in the Unscramble app is the correct update of the score, word count, and the scrambled word when the user enters a correct word and clicks the `Submit` button.
+
+* `Error path:` The error path tests focus on testing the functionality for a negative flow–that is, to check how the app responds to error conditions or invalid user input. It is quite challenging to determine all the possible error flows because there are lots of possible outcomes when intended behavior is not achieved.
+
+One piece of general advice is to list all the possible error paths, write tests for them, and keep your unit tests evolving as you discover different scenarios.
+
+An example of an error path in the Unscramble app is the user enters an incorrect word and clicks on the `Submit` button, which causes an error message to appear and the score and word count to not update.
+
+* `Boundary case:` A boundary case focuses on testing boundary conditions in the app. In the Unscramble app, a boundary is checking the UI state when the app loads and the UI state after the user plays a maximum number of words.
+
+Creating test scenarios around these categories can serve as guidelines for your test plan.
+
+### **Create tests**
+
+A good unit test typically has following four properties:
+
+* `Focused:` It should focus on testing a unit, such as a piece of code. This piece of code is often a class or a method. The test should be narrow and focus on validating the correctness of individual pieces of code, rather than multiple pieces of code at the same time.
+
+* `Understandable:` It should be simple and easy to understand when you read the code. At a glance, a developer should be able to immediately understand the intention behind the test.
+
+* `Deterministic:` It should consistently pass or fail. When you run the tests any number of times, without making any code changes, the test should yield the same result. The test shouldn't be flaky, with a failure in one instance and a pass in another instance despite no modification to the code.
+
+* `Self-contained:` It does not require any human interaction or setup and runs in isolation.
+
+## Navigation in Jetpack Compose
+### ???
 
 # Android quizzes (lvl: Beginner)
-
 
 ## Unit 1:
 ### Introduction to Kotlin(quiz 1)
@@ -1445,3 +1608,55 @@ val colors = listOf("Red", "Green", "Blue")
 
 ## Unit 4:
 ### Architecture Components(quiz 1)
+1. Which method is first called when the app no longer has focus?
+- 🟢 `onPause()` 🟢
+- `onStart()`
+- `onCreate()`
+- `onStop()`
+
+2. After ___, the app is no longer visible on screen.
+- `onPause()`
+- `onStart()`
+- `onCreate()`
+- 🟢 `onStop()` 🟢
+
+3. Use ___ to write a debug message. This method takes two arguments: the log tag and the log message.
+- `Log.i()`
+- 🟢 `Log.d()` 🟢
+- `Log.e()`
+- `Log.w()`
+
+4. To save a value that needs to survive a configuration change, declare its variables with ___.
+- `MutableState{}`
+- 🟢 `rememberSaveable{}` 🟢
+- `remember{}`
+- `State Hoisting`
+
+5. The separation of concerns design principle states that the app should be divided into classes, each with separate responsibilities.
+- 🟢 True 🟢
+- False
+
+6. The UI is what the user sees, while the UI state is what the app says they should see.
+- 🟢 True 🟢
+- False
+
+7. According to the recommended app architecture, each application should have at least the following two layers:
+- The domain layer and the data layer
+- 🟢 The UI layer and the data layer 🟢
+- Repository layer and the UI layer
+- The domain layer and the UI layer
+
+8. StateFlow is a data-holder observable flow that emits the current and new state updates.
+- 🟢 True 🟢
+- False
+
+9. Which of the following configurations should be added to the build.gradle file to add dependencies for the unit test source code?
+- `implementation`
+- 🟢 `testImplementation` 🟢
+- `debugImplementation`
+- `androidTestImplementation`
+
+10. Unit tests are executed on an Android device or emulator.
+- True
+- 🟢 False 🟢
+### Navigation in Jetpack Compose(quiz 2)
