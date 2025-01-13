@@ -1172,6 +1172,226 @@ Window Size Classes introduces three categories of sizes: Compact, Medium, and E
 
 ## Unit 5: Your first Android app
 ## Get data from the internet
+####  Exceptions and cancellation
+An [exception](https://kotlinlang.org/docs/exceptions.html) is an unexpected event that happens during execution of your code. You should implement appropriate ways of handling these exceptions, to prevent your app from crashing and impacting the user experience negatively.
+
+Here's an example of a program that terminates early with an exception. The program is intended to calculate the number of pizzas each person gets to eat, by dividing `numberOfPizzas / numberOfPeople`. Say you accidentally forget to set the value of the `numberOfPeople` to an actual value.
+
+**Exceptions with coroutines**
+
+```kotlin
+import kotlinx.coroutines.*
+
+fun main() {
+    runBlocking {
+        println("Weather forecast")
+        println(getWeatherReport())
+        println("Have a good day!")
+    }
+}
+
+suspend fun getWeatherReport() = coroutineScope {
+    val forecast = async { getForecast() }
+    val temperature = async { getTemperature() }
+    "${forecast.await()} ${temperature.await()}"
+}
+
+suspend fun getForecast(): String {
+    delay(1000)
+    return "Sunny"
+}
+
+suspend fun getTemperature(): String {
+    delay(1000)
+    return "30\u00b0C"
+}
+```
+
+Within one of the suspending functions, intentionally throw an exception to see what the effect would be. This simulates that an unexpected error happened when fetching data from the server, which is plausible.
+
+In the `getTemperature()` function, add a line of code that throws an exception. Write a throw expression using the `throw` keyword in Kotlin followed by a new instance of an exception which extends from `Throwable`.
+
+For example, you can throw an AssertionError and pass in a message string that describes the error in more detail: `throw AssertionError("Temperature is invalid")`. Throwing this exception stops further execution of the `getTemperature()` function.
+
+```kotlin
+import kotlinx.coroutines.*
+
+fun main() {
+    runBlocking {
+        println("Weather forecast")
+        println(getWeatherReport())
+        println("Have a good day!")
+    }
+}
+
+suspend fun getWeatherReport() = coroutineScope {
+    val forecast = async { getForecast() }
+    val temperature = async {
+        try {
+            getTemperature()
+        } catch (e: AssertionError) {
+            println("Caught exception $e")
+            "{ No temperature found }"
+        }
+    }
+
+    "${forecast.await()} ${temperature.await()}"
+}
+
+suspend fun getForecast(): String {
+    delay(1000)
+    return "Sunny"
+}
+
+suspend fun getTemperature(): String {
+    delay(500)
+    throw AssertionError("Temperature is invalid")
+    return "30\u00b0C"
+}
+```
+
+#### Coroutine concepts
+When executing work asynchronously or concurrently, there are questions that you need to answer about how the work will be executed, how long the coroutine should exist for, what should happen if it gets cancelled or fails with an error, and more. Coroutines follow the principle of structured concurrency, which enforces you to answer these questions when you use coroutines in your code using a combination of mechanisms.
+
+**Job**
+When you launch a coroutine with the `launch()` function, it returns an instance of `Job`. The Job holds a handle, or reference, to the coroutine, so you can manage its lifecycle.
+```kotlin
+val job = launch { ... }
+```
+The job can be used to control the life cycle, or how long the coroutine lives for, such as cancelling the coroutine if you don't need the task anymore.
+```kotlin
+job.cancel()
+```
+With a job, you can check if it's active, cancelled, or completed. The job is completed if the coroutine and any coroutines that it launched have completed all of their work. Note that the coroutine could have completed due to a different reason, such as being cancelled, or failing with an exception, but the job is still considered completed at that point.
+
+Jobs also keep track of the parent-child relationship among coroutines.
+
+**Job hierarchy**
+```kotlin
+val job = launch {
+    ...
+
+    val childJob = launch { ... }
+
+    ...
+}
+```
+These parent-child relationships form a job hierarchy, where each job can launch jobs, and so on.
+![](assets/imgs/parent-child.png)
+This parent-child relationship is important because it will dictate certain behavior for the child and parent, and other children belonging to the same parent. You saw this behavior in the earlier examples with the weather program.
+
+* If a parent job gets cancelled, then its child jobs also get cancelled.
+* When a child job is canceled using `job.cancel()`, it terminates, but it does not cancel its parent.
+* If a job fails with an exception, it cancels its parent with that exception. This is known as propagating the error upwards (to the parent, the parent's parent, and so on).
+
+**CoroutineScope**
+
+Coroutines are typically launched into a `CoroutineScope`. This ensures that we don't have coroutines that are unmanaged and get lost, which could waste resources.
+
+`launch()` and `async()` are extension functions on `CoroutineScope`. Call `launch()` or `async()` on the scope to create a new coroutine within that scope.
+
+A `CoroutineScope` is tied to a lifecycle, which sets bounds on how long the coroutines within that scope will live. If a scope gets cancelled, then its job is cancelled, and the cancellation of that propagates to its child jobs. If a child job in the scope fails with an exception, then other child jobs get cancelled, the parent job gets cancelled, and the exception gets re-thrown to the caller.
+
+**CoroutineScope in Kotlin Playground**
+
+In this codelab, you used `runBlocking()` which provides a `CoroutineScope` for your program. You also learned how to use `coroutineScope { }` to create a new scope within the `getWeatherReport()` function.
+
+**CoroutineScope in Android apps**
+
+Android provides coroutine scope support in entities that have a well-defined lifecycle, such as `Activity (lifecycleScope)` and `ViewModel (viewModelScope)`. Coroutines that are started within these scopes will adhere to the lifecycle of the corresponding entity, such as `Activity` or `ViewModel`.
+
+For example, say you start a coroutine in an `Activity` with the provided coroutine scope called `lifecycleScope`. If the activity gets destroyed, then the `lifecycleScope` will get canceled and all its child coroutines will automatically get canceled too. You just need to decide if the coroutine following the lifecycle of the `Activity` is the behavior you want.
+
+In the Race Tracker Android app you will be working on, you'll learn a way to scope your coroutines to the lifecycle of a composable.
+
+**Implementation Details of CoroutineScope**
+
+If you check the source code for how [CoroutineScope.kt](https://cs.android.com/android/platform/superproject/+/master:external/kotlinx.coroutines/kotlinx-coroutines-core/common/src/CoroutineScope.kt?q=coroutinescope) is implemented in the Kotlin coroutines library, you can see that `CoroutineScope` is declared as an interface and it contains a `CoroutineContext` as a variable.
+
+The `launch()` and `async()` functions create a new child coroutine within that scope and the child also inherits the context from the scope. What is contained within the context? Let's discuss that next.
+
+**CoroutineContext**
+
+The `CoroutineContext` provides information about the context in which the coroutine will be running in. The `CoroutineContext` is essentially a map that stores elements where each element has a unique key. These are not required fields, but here are some examples of what may be contained in a context:
+
+* name - name of the coroutine to uniquely identify it
+* job - controls the lifecycle of the coroutine
+* dispatcher - dispatches the work to the appropriate thread
+* exception handler - handles exceptions thrown by the code executed in the coroutine
+
+Each of the elements in a context can be appended together with the `+` operator. For example, one `CoroutineContext` could be defined as follows:
+
+```kotlin
+Job() + Dispatchers.Main + exceptionHandler
+```
+Within a coroutine, if you launch a new coroutine, the child coroutine will inherit the `CoroutineContext` from the parent coroutine, but replace the job specifically for the coroutine that just got created. You can also override any elements that were inherited from the parent context by passing in arguments to the `launch()` or `async()` functions for the parts of the context that you want to be different.
+```kotlin
+scope.launch(Dispatchers.Default) {
+    ...
+}
+```
+
+**Dispatcher**
+
+Coroutines use dispatchers to determine the thread to use for its execution. A thread can be started, does some work (executes some code), and then terminates when there's no more work to be done.
+
+There are two terms to understand when it comes to the threading behavior of your code: **blocking** and **non-blocking**. A regular function blocks the calling thread until its work is completed. That means it does not yield the calling thread until the work is done, so no other work can be done in the meantime. Conversely, non-blocking code yields the calling thread until a certain condition is met, so you can do other work in the meantime. You can use an asynchronous function to perform non-blocking work because it returns before its work is completed.
+
+There are some built-in dispatchers that Kotlin provides:
+
+* **Dispatchers.Main:** Use this dispatcher to run a coroutine on the main Android thread. This dispatcher is used primarily for handling UI updates and interactions, and performing quick work.
+* **Dispatchers.IO:** This dispatcher is optimized to perform disk or network I/O outside of the main thread. For example, read from or write to files, and execute any network operations.
+* **Dispatchers.Default:** This is a default dispatcher used when calling `launch()` and `async()`, when no dispatcher is specified in their context. You can use this dispatcher to perform computationally-intensive work outside of the main thread. For example, processing a bitmap image file.
+
+```kotlin
+import kotlinx.coroutines.*
+
+fun main() {
+    runBlocking {
+        println("${Thread.currentThread().name} - runBlocking function")
+                launch {
+            println("${Thread.currentThread().name} - launch function")
+            withContext(Dispatchers.Default) {
+                println("${Thread.currentThread().name} - withContext function")
+                delay(1000)
+                println("10 results found.")
+            }
+            println("${Thread.currentThread().name} - end of launch function")
+        }
+        println("Loading...")
+    }
+}
+```
+
+**Conclusion of coroutines**
+
+Great work on this challenging topic of coroutines! You have learned that coroutines are very useful because their execution can be suspended, freeing up the underlying thread to do other work, and then the coroutine can be resumed later. This allows you to run concurrent operations in your code.
+
+Coroutine code in Kotlin follows the principle of structured concurrency. It is sequential by default, so you need to be explicit if you want concurrency (e.g. using `launch()` or `async()`). With structured concurrency, you can take multiple concurrent operations and put it into a single synchronous operation, where concurrency is an implementation detail. The only requirement on the calling code is to be in a suspend function or coroutine. Other than that, the structure of the calling code doesn't need to take into account the concurrency details. That makes your asynchronous code easier to read and reason about.
+
+Structured concurrency keeps track of each of the launched coroutines in your app and ensures that they are not lost. Coroutines can have a hierarchy—tasks might launch subtasks, which in turn can launch subtasks. Jobs maintain the parent-child relationship among coroutines, and allow you to control the lifecycle of the coroutine.
+
+Launch, completion, cancellation, and failure are four common operations in the coroutine's execution. To make it easier to maintain concurrent programs, structured concurrency defines principles that form the basis for how the common operations in the hierarchy are managed:
+
+* **Launch:** Launch a coroutine into a scope that has a defined boundary on how long it lives for.
+* **Completion:** The job is not complete until its child jobs are complete.
+* **Cancellation:** This operation needs to propagate downward. When a coroutine is canceled, then the child coroutines need to also be canceled.
+* **Failure:** This operation should propagate upward. When a coroutine throws an exception, then the parent will cancel all of its children, cancel itself, and propagate the exception up to its parent. This continues until the failure is caught and handled. It ensures that any errors in the code are properly reported and never lost.
+
+Through hands-on practice with coroutines and understanding the concepts behind coroutines, you are now better equipped to write concurrent code in your Android app. By using coroutines for asynchronous programming, your code is simpler to read and reason about, more robust in situations of cancellations and exceptions, and delivers a more optimal and responsive experience for end users.
+
+**Summary**
+
+* Coroutines enable you to write long running code that runs concurrently without learning a new style of programming. The execution of a coroutine is sequential by design.
+* Coroutines follow the principle of structured concurrency, which helps ensure that work is not lost and tied to a scope with a certain boundary on how long it lives. Your code is sequential by default and cooperates with an underlying event loop, unless you explicitly ask for concurrent execution (e.g. using `launch()` or `async()`). The assumption is that if you call a function, it should finish its work completely (unless it fails with an exception) by the time it returns regardless of how many coroutines it may have used in its implementation details.
+* The `suspend` modifier is used to mark a function whose execution can be suspended and resumed at a later point.
+* A `suspend` function can be called only from another suspending function or from a coroutine.
+* You can start a new coroutine using the `launch()` or `async()` extension functions on `CoroutineScope`.
+* Jobs plays an important role to ensure structured concurrency by managing the lifecycle of coroutines and maintaining the parent-child relationship.
+* A `CoroutineScope` controls the lifetime of coroutines through its Job and enforces cancellation and other rules to its children and their children recursively.
+* A `CoroutineContext` defines the behavior of a coroutine, and can include references to a job and coroutine dispatcher.
+* Coroutines use a `CoroutineDispatcher` to determine the threads to use for its execution.
+
 ## Load and display images from the internet
 
 # Android quizzes (lvl: Beginner)
