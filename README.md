@@ -65,7 +65,7 @@ This is a guie brown whit the propose to help me and others when you need to rev
     - [Adapt for different screen sizes(quiz 3)](#Adapt-for-different-screen-sizes(quiz-3))
 
   - [Unit 5:](#Unit-5:)
-  - [Get data from the internet(quiz 1)](#Get-data-from-the-internet(quiz-1))
+    - [Get data from the internet(quiz 1)](#Get-data-from-the-internet(quiz-1))
     - [Load and display images from the internet(quiz 2)](#Load-and-display-images-from-the-internet(quiz-2))
 
 # Android Basics with Compose (lvl: Beginner)
@@ -1393,6 +1393,58 @@ Through hands-on practice with coroutines and understanding the concepts behind 
 * Coroutines use a `CoroutineDispatcher` to determine the threads to use for its execution.
 
 ## Load and display images from the internet
+
+### Separate the UI layer and Data layer
+
+**Why different layers?**
+
+Separating the code into different layers makes your app more scalable, more robust, and easier to test. Having multiple layers with clearly defined boundaries also makes it easier for multiple developers to work on the same app without negatively impacting each other.
+
+[Android's Recommended app architecture](https://developer.android.com/topic/architecture#recommended-app-arch) states that an app should have at least a UI layer and a data layer.
+
+**What is a data layer?**
+
+A data layer is responsible for the business logic of your app and for sourcing and saving data for your app. The data layer exposes data to the UI layer using the [Unidirectional Data Flow](https://developer.android.com/topic/architecture#unidirectional-data-flow) pattern.
+
+![](assets/imgs/app-architecture-flow.png)
+
+**Implementing dependency injection:**
+
+```kotlin
+interface Engine {
+    fun start()
+}
+
+class ElectricEngine : Engine {
+    override fun start() {
+        println("ElectricEngine started!")
+    }
+}
+
+class Car(private val engine: Engine) {
+    fun start() {
+        engine.start()
+    }
+}
+
+fun main() {
+    val engine = ElectricEngine()
+    val car = Car(engine)
+    car.start()
+}
+```
+
+* **Helps with the reusability of code.** Code is not dependent on a specific object, which allows for greater flexibility.
+
+* **Makes refactoring easier.** Code is loosely coupled, so refactoring one section of code does not impact another section of code.
+
+* **Helps with testing.** Test objects can be passed in during testing.
+
+
+
+
+
+
 
 # Android quizzes (lvl: Beginner)
 
