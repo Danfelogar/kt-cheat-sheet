@@ -42,6 +42,11 @@ This is a guie brown whit the propose to help me and others when you need to rev
     - [Get data from the internet](#Get-data-from-the-internet)
     - [Load and display images from the internet](#Load-and-display-images-from-the-internet)
 
+  - [Unit 6: Data persistence](#Unit-6:-Data-persistence)
+    -[Introduction to SQL](#Introduction-to-SQL)
+    -[Use Room for data persistence](#Use-Room-for-data-persistence)
+    -[Store and access data using keys with DataStore](#Store-and-access-data-using-keys-with-DataStore)
+
 - [Android quizzes (lvl: Beginner)](#Android-quizzes-(lvl:-Beginner))
 
   - [Unit 1:](#Unit-1:)
@@ -67,6 +72,11 @@ This is a guie brown whit the propose to help me and others when you need to rev
   - [Unit 5:](#Unit-5:)
     - [Get data from the internet(quiz 1)](#Get-data-from-the-internet(quiz-1))
     - [Load and display images from the internet(quiz 2)](#Load-and-display-images-from-the-internet(quiz-2))
+
+  - [Unit 6:](#Unit-6:)
+    -[Introduction to SQL(quiz 1)](#Introduction-to-SQL(quiz-1))
+    -[Use Room for data persistence(quiz 2)](#Use-Room-for-data-persistence(quiz-2))
+    -[Store and access data using keys with DataStore(quiz 3)](#Store-and-access-data-using-keys-with-DataStore(quiz-3))
 
 # Android Basics with Compose (lvl: Beginner)
 
@@ -1446,6 +1456,222 @@ fun main() {
 
 
 
+## Unit 6: Data persistence
+## Introduction to SQL
+A relational database works the same way.
+
+1) Tables define high-level groupings of data you want to represent, such as students and professors.
+
+2) Columns define the data that each row in the table contains.
+
+3) Rows contain the actual data that consist of values for each column in the table.
+
+The structure of a relational database also mirrors what you already know about classes and objects in Kotlin.
+
+```kotlin
+data class Student(
+    id: Int,
+    name: String,
+    major: String,
+    gpa: Double
+)
+```
+4) Classes, like tables, model the data you want to represent in your app.
+
+5) Properties, like columns, define the specific pieces of data that every instance of the class should contain.
+
+6) Objects, like rows, are the actual data. Objects contain values for each property defined in the class, just as rows contain values for each column defined in the data table.
+
+**What is SQLite?**
+
+SQLite is a commonly used relational database. Specifically, SQLite refers to a lightweight C library for relational database management with Structured Query Language, known as SQL and sometimes pronounced as "sequel" for short.
+
+**Representing data with SQLite**
+
+In Kotlin, you're familiar with data types like `Int` and `Boolean`. SQLite databases use data types too! Data table columns must have a specific data type. The following table maps common Kotlin data types to their SQLite equivalents.
+
+![](assets/imgs/type-kotlin-to-sql-lite.png)
+
+**SQL `SELECT` statement**
+
+A SQL statement—sometimes called a query—is used to read or manipulate a database.
+
+You read data from a SQLite database with a `SELECT` statement. A simple `SELECT` statement consists of the `SELECT` keyword, followed by the column name, followed by the `FROM` keyword, followed by the table name. Every SQL statement ends with a semicolon (`;`).
+
+```sql
+SELECT "Column name" FROM "Table name";
+```
+A `SELECT` statement can also return data from multiple columns. You must separate column names with a comma.
+
+```sql
+SELECT "Column1, Column2" FROM "Table name";
+```
+
+If you want to select every column from the table, you use the wildcard character (`*`) in place of the column names.
+
+```sql
+SELECT * FROM "Table name";
+```
+
+### Use SELECT statements with aggregate functions and distinct values
+
+**Reduce columns with aggregate functions**
+
+SQL statements aren't limited to returning rows. SQL offers a variety of functions that can perform an operation or calculation on a specific column, such as finding the maximum value, or counting the number of unique possible values for a particular column. These functions are called **aggregate functions**. Instead of returning all the data of a specific column, you can return a single value from a specific column.
+
+Examples of SQL aggregate functions include the following:
+
+* `COUNT()`: Returns the total number of rows that match the query.
+* `SUM()`: Returns the sum of the values for all rows in the selected column.
+* `AVG()`: Returns the mean value—average—of all the values in the selected column.
+* `MIN()`: Returns the smallest value in the selected column.
+* `MAX()`: Returns the largest value in the selected column.
+
+Instead of a column name, you can call an aggregate function and pass in a column name as an argument between the parentheses.
+
+```sql
+SELECT "Aggregate function" ("Column name")
+```
+
+**Filter duplicate results with `DISTINCT`**
+
+When you select a column, you can precede it with the `DISTINCT` keyword. This approach can be useful if you want to remove duplicates from the query result.
+
+```sql
+SELECT DISTINCT "Column name" FROM "Table name";
+```
+You can also precede the column name in an aggregate function with the `DISTINCT` keyword.
+
+```sql
+SELECT "Aggregate function" (DISTINCT "Column name") FROM "Table name";
+```
+
+**Filter queries with a WHERE clause**
+
+Many email apps offer the feature to filter the messages shown based on certain criteria, such as data, search term, folder, sender, etc. For these types of use cases, you can add a `WHERE` clause to your `SELECT` query.
+
+```sql
+SELECT "Columns or aggregate function" FROM "Table name" WHERE "Condition";
+```
+
+**Logical operators with `WHERE` clauses**
+
+SQL `WHERE` clauses aren't limited to a single expression. You can use the `AND` keyword, equivalent to the Kotlin **and** operator (`&&`), to only include results that satisfy both conditions.
+
+```sql
+WHERE "First condition" AND "Second condition"
+```
+Alternatively, you can use the `OR` keyword, equivalent to the Kotlin **or** operator (`||`), to include rows in the results that satisfy either condition.
+
+```sql
+WHERE "First condition" OR "Second condition"
+```
+
+For readability, you can also negate an expression using the `NOT` keyword.
+
+```sql
+WHERE  NOT "Condition"
+```
+
+**Search for text using LIKE**
+
+One super useful thing you can do with a `WHERE` clause is to search for text in a specific column. You achieve this result when you specify a column name, followed by the `LIKE` keyword, followed by a search string.
+
+```sql
+WHERE "Column name" LIKE "Search string"
+```
+The search string starts with the percent symbol (`%`), followed by the text to search for (Search term), followed by the percent symbol (`%`) again.
+
+```sql
+LIKE '% Search term %'
+```
+If you're searching for a prefix—results that begin with the specified text—omit the first percent symbol (`%`).
+```sql
+LIKE ' Search term %'
+```
+Alternatively, if you're searching for a suffix, omit the last percent symbol (`%`).
+```sql
+LIKE '% Search term '
+```
+**Group results with `GROUP BY`**
+
+You can use a `GROUP BY` clause to group results so that all rows that have the same value for a given column are grouped next to each other in the results. This clause doesn't change the results, but only the order in which they're returned.
+
+To add a `GROUP BY` clause to a `SELECT` statement, add the `GROUP BY` keyword followed by the column name you want to group results by.
+
+```sql
+GROUP BY "Column name"
+```
+**Sort results with ORDER BY**
+
+You can also change the order of query results when you sort them with the **ORDER BY** clause. Add the **ORDER BY** keyword, followed by a column name, followed by the sort direction.
+
+```sql
+ORDER BY "Column name" "Sort direction"
+```
+By default, the sort direction is `a`scending order, which you can omit from the `ORDER BY` clause. If you want the results sorted in descending order, add `DESC` after the column name.
+
+**Restrict the number of results with LIMIT**
+
+So far, all the examples return every single result from the database that matches the query. In many cases, you only need to display a limited number of rows from your database. You can add a `LIMIT` clause to your query to only return a specific number of results. Add the `LIMIT` keyword followed by the maximum number of rows you want to return. If applicable, the `LIMIT` clause comes after the `ORDER BY` clause.
+
+```sql
+LIMIT "Max rows to return"
+
+LIMIT "Max rows to return" OFFSET "Rows to skip"
+```
+### Insert, update, and delete data in a database
+**Insert data into a database**
+
+You can add a new row to a database with an `INSERT` statement. An `INSERT` statement starts with `INSERT INTO` followed by the table name in which you want to insert a new row. The `VALUES` keyword appears on a new line followed by a set of parentheses that contain a comma separated list of values. You need to list the values in the same order of the database columns.
+
+```sql
+INSERT INTO "Table name"
+VALUES ("Value of column 1", "Value of column 2", ...)
+```
+
+**Update existing data in a database**
+After you've inserted data into a table, you can still change it later. You can update the value of one or more columns using an `UPDATE` statement. An `UPDATE` statement starts with the `UPDATE` keyword, followed by the table name, followed by a `SET` clause.
+```sql
+UPDATE "Table name"
+SET "Sets of columns and values"
+```
+A `SET` clause consists of the `SET` keyword, followed by the name of the column you want to update.
+```sql
+SET "First column" = "First value", "Second column" = "Second value",
+...
+```
+An `UPDATE` statement often includes a `WHERE` clause to specify the single row or multiple rows that you want to update with the specified column-value pair.
+
+```sql
+UPDATE "Table name"
+SET "Sets of columns and values"
+WHERE "Condition(s)"
+```
+
+**Delete a row from a database**
+
+Finally, you can use a SQL `DELETE` statement to delete one or more rows from a table. A `DELETE` statement starts with the `DELETE` keyword, followed by the `FROM` keyword, followed by the table name, followed by a `WHERE` clause to specify which row or rows you want to delete.
+```sql
+DELETE FROM "Table name"
+WHERE "Condition"
+```
+**Summary**
+
+Congratulations! You learned a lot! You can now read from a database using `SELECT` statements, including `WHERE`, `GROUP BY`, `ORDER BY`, and `LIMIT` clauses to filter results. You also learned about frequently used aggregate functions, the `DISTINCT` keyword to specify unique results, and the `LIKE` keyword to perform a text search on the values in a column. Finally, you learned how to `INSERT`, `UPDATE`, and `DELETE` rows in a data table.
+
+These skills will translate directly to Room, and with your knowledge of SQL, you'll be more than prepared to take on data persistence in your future apps.
+
+`SELECT` statement syntax:
+```sql
+SELECT "Columns or aggregate functions" FROM "Table name"
+WHERE "Conditions"
+GROUP BY "Columns"
+ORDER BY "Colum name" "Sort order"
+LIMIT "Number of rows"
+```
+
+
 # Android quizzes (lvl: Beginner)
 
 ## Unit 1:
@@ -1691,7 +1917,6 @@ if (number % 10 == 0) {
   - 🟢 Lambda expression 🟢
   - Function reference
   - Trailing lambda
-
 ### Add a button to an app(quiz 2)
 1. Use a ___ Composable to display an image
   - Button
@@ -2238,3 +2463,59 @@ val colors = listOf("Red", "Green", "Blue")
 10. The `runTest()` function can be used to test `suspend` functions.
     - 🟢 True 🟢
     - False
+
+## Unit 6:
+## Introduction to SQL(quiz 1)
+### Quiz: Relational Databases & SQLite
+1. Which of the following statements are true about relational databases and SQLite? *(Choose all that apply)*
+   - 🟢 Referencing one table's primary key in another table lets you model relationships between tables. 🟢
+   - A SQLite database consists of columns, which consist of tables and rows.
+   - Every data table must have at least one foreign key.
+   - 🟢 Rows contain the individual items in the database. 🟢
+
+2. It is optional to end a SQL statement with a semicolon.
+   - True
+   - 🟢 False 🟢
+
+3. If you want to calculate the sum of all values for a database column, what do you use?
+   - 🟢 Aggregate function 🟢
+   - `WHERE clause`
+   - `DISTINCT` keyword
+   - `LIMIT` clause
+
+4. Which `SELECT` statement returns the number of unique email addresses for messages in the spam folder?
+   - `SELECT COUNT(DISTINCT folder) FROM email WHERE spam != sender;`
+   - `SELECT DISTINCT COUNT(sender) FROM email WHERE folder = 'spam';`
+   - 🟢 `SELECT COUNT(DISTINCT sender) FROM email WHERE folder = 'spam';` 🟢
+   - `SELECT DISTINCT COUNT('spam') FROM email WHERE sender = folder;`
+
+5. The SQL statement `SELECT * FROM contacts WHERE name LIKE '%Milton'` returns all rows where the value of the `name` column begins with "Milton".
+   - 🟢 True 🟢
+   - False
+
+6. Which of the following statements are true about `GROUP BY` and `ORDER BY`? *(Choose all that apply)*
+   - The `ORDER BY` clause comes before the `GROUP BY` clause.
+   - In an `ORDER BY` clause, descending order is the default.
+   - If a query contains a `GROUP BY` clause, it overrides the `ORDER BY` clause.
+
+7. The `WHERE` condition `NOT read = false` and the `WHERE` condition `read != true` are equivalent.
+   - True
+   - 🟢 False 🟢
+
+8. The `LIMIT` clause `LIMIT 30 SKIP 60` returns:
+   - 60 rows
+   - Rows 31 through 60
+   - 🟢 Rows 61 through 90 🟢
+   - 90 rows
+
+9. An `UPDATE` statement uses a ___ clause to assign values for columns.
+   - WHERE
+   - 🟢 SET 🟢
+   - ASSIGN
+   - LIKE
+
+10. `UPDATE` and `DELETE` statements can include a `WHERE` clause and can affect multiple rows.
+    - 🟢 True 🟢
+    - False
+## Use Room for data persistence(quiz 2)
+## Store and access data using keys with DataStore(quiz 3)
