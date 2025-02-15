@@ -22,14 +22,14 @@ This is a guie brown whit the propose to help me and others when you need to rev
       - [Use function types and lambda expressions in Kotlin](#Use-function-types-and-lambda-expressions-in-Kotlin)
     - [Add a button to an app](#Add-a-button-to-an-app)
     - [Interacting with UI and state](#Interacting-with-UI-and-state)
-      -[Intro to state in Compose](#Intro-to-state-in-Compose)
-      -[Write automated tests](#Write-automated-tests)
+      - [Intro to state in Compose](#Intro-to-state-in-Compose)
+      - [Write automated tests](#Write-automated-tests)
 
   - [Unit 3: Unit 3: Display lists and use Material Design](#Unit-3:-Display-lists-and-use-Material-Design)
     - [More Kotlin fundamentals](#More-Kotlin-fundamentals)
-      -[Generics, objects, and extensions](#Generics,-objects,-and-extensions)
-      -[Use collections in Kotlin](#Use-collections-in-Kotlin)
-      -[Higher-order functions with collections](#Higher-order-functions-with-collections)
+      - [Generics, objects, and extensions](#Generics,-objects,-and-extensions)
+      - [Use collections in Kotlin](#Use-collections-in-Kotlin)
+      - [Higher-order functions with collections](#Higher-order-functions-with-collections)
     - [Build a scrollable list](#Build-a-scrollable-list)
     - [Build beautiful apps](#Build-beautiful-apps)
 
@@ -43,9 +43,10 @@ This is a guie brown whit the propose to help me and others when you need to rev
     - [Load and display images from the internet](#Load-and-display-images-from-the-internet)
 
   - [Unit 6: Data persistence](#Unit-6:-Data-persistence)
-    -[Introduction to SQL](#Introduction-to-SQL)
-    -[Use Room for data persistence](#Use-Room-for-data-persistence)
-    -[Store and access data using keys with DataStore](#Store-and-access-data-using-keys-with-DataStore)
+    - [Introduction to SQL](#Introduction-to-SQL)
+    - [Use Room for data persistence](#Use-Room-for-data-persistence)
+    - [Store and access data using keys with DataStore](#Store-and-access-data-using-keys-with-DataStore)
+  - [Unit 7: Schedule tasks with WorkManager](#Unit-7:-Schedule-tasks-with-WorkManager)
 
 - [Android quizzes (lvl: Beginner)](#Android-quizzes-(lvl:-Beginner))
 
@@ -74,9 +75,11 @@ This is a guie brown whit the propose to help me and others when you need to rev
     - [Load and display images from the internet(quiz 2)](#Load-and-display-images-from-the-internet(quiz-2))
 
   - [Unit 6:](#Unit-6:)
-    -[Introduction to SQL(quiz 1)](#Introduction-to-SQL(quiz-1))
-    -[Use Room for data persistence(quiz 2)](#Use-Room-for-data-persistence(quiz-2))
+    - [Introduction to SQL(quiz 1)](#Introduction-to-SQL(quiz-1))
+    - [Use Room for data persistence(quiz 2)](#Use-Room-for-data-persistence(quiz-2))
     -[Store and access data using keys with DataStore(quiz 3)](#Store-and-access-data-using-keys-with-DataStore(quiz-3))
+  - [Unit 7:](#Unit-7:)
+     - [Schedule tasks with WorkManager(quiz 1)](#Schedule-tasks-with-WorkManager(quiz-1))
 
 # Android Basics with Compose (lvl: Beginner)
 
@@ -2479,7 +2482,7 @@ val colors = listOf("Red", "Green", "Blue")
     - False
 
 ## Unit 6:
-## Introduction to SQL(quiz 1)
+### Introduction to SQL(quiz 1)
 1. Which of the following statements are true about relational databases and SQLite? *(Choose all that apply)*
    - 🟢 Referencing one table's primary key in another table lets you model relationships between tables. 🟢
    - A SQLite database consists of columns, which consist of tables and rows.
@@ -2530,7 +2533,7 @@ val colors = listOf("Red", "Green", "Blue")
 10. `UPDATE` and `DELETE` statements can include a `WHERE` clause and can affect multiple rows.
     - 🟢 True 🟢
     - False
-## Use Room for data persistence(quiz 2)
+### Use Room for data persistence(quiz 2)
 1. Which of the following statements is not true about the `@Query` annotation?
    - The `@Query` annotation is used with a method in the DAO.
    - The `@Query` annotation corresponds to a `SELECT` query.
@@ -2583,4 +2586,29 @@ val colors = listOf("Red", "Green", "Blue")
     - After you assign the primary key, you cannot modify it.
     - 🟢 Room generates an incrementing primary key value for each entity by default. 🟢
     - The primary key represents the entity object as
-## Store and access data using keys with DataStore(quiz 3)
+### Store and access data using keys with DataStore(quiz 3)
+1. The implementations of `DataStore` are: *(Choose all that apply)*
+   - 🟢 Proto 🟢
+   - 🟢 Preferences 🟢
+   - Room
+   - SQLite
+
+2. The Preferences DataStore uses a predefined schema.
+   - True
+   - 🟢 False 🟢
+
+3. Which function does DataStore provide to modify the DataStore?
+   - `preferencesDataStore()`
+   - `updatePreferences()`
+   - 🟢 `edit()` 🟢
+   - `map()`
+
+4. Preferences DataStore uses keys to access stored values.
+   - 🟢 True 🟢
+   - False
+
+5. Which exception can occur when you attempt to read from a Preferences DataStore?
+   - IllegalArgumentException
+   - 🟢 IOException 🟢
+   - IllegalStateException
+   - NumberFormatException
