@@ -1689,6 +1689,42 @@ The functionality of the DAO is to hide all the complexities involved in perform
 
 ![](assets/imgs/data-access-object-flow.png)
 
+## Unit 7: Schedule tasks with WorkManager
+### What is WorkManager?
+WorkManager is part of Android Jetpack and an Architecture Component for background work that needs a combination of opportunistic and guaranteed execution. Opportunistic execution means that WorkManager does your background work as soon as it can. Guaranteed execution means that WorkManager takes care of the logic to start your work under a variety of situations, even if you navigate away from your app.
+
+WorkManager is an incredibly flexible library that has many additional benefits. Some of these benefits include:
+
+* Support for both asynchronous one-off and periodic tasks.
+* Support for constraints, such as network conditions, storage space, and charging status.
+* Chaining of complex work requests, such as running work in parallel.
+* Output from one work request used as input for the next.
+* Handling API-level compatibility back to API level 14 (see note).
+* Working with or without Google Play services.
+* Following system health best practices.
+* Support to easily display state of work requests in the app's UI.
+
+### When to use WorkManager
+The WorkManager library is a good choice for tasks that you need to complete. The running of these tasks is not dependent on the app continuing to run after the work is enqueued. The tasks run even if the app is closed or the user returns to the home screen.
+
+Some examples of tasks that are a good use of WorkManager:
+
+* Periodically querying for latest news stories.
+* Applying filters to an image and then saving the image.
+* Periodically syncing local data with the network.
+
+WorkManager is one option for running a task off of the main thread but it is not a catch-all for running every type of task off of the main thread. [Coroutines](https://developer.android.com/kotlin/coroutines) are another option that previous codelabs discuss.
+
+### WorkManager Basics
+There are a few WorkManager classes you need to know about:
+
+* `Worker` / `CoroutineWorker`: Worker is a class that performs work synchronously on a background thread. As we are interested in asynchronous work, we can use CoroutineWorker, which has interoperability with Kotlin Coroutines. In this app, you extend from the CoroutineWorker class and override the `doWork()` method. This method is where you put the code for the actual work you want to perform in the background.
+* `WorkRequest`: This class represents a request to do some work. A
+`WorkRequest`is where you define if the worker needs to be run once or periodically. Constraints can also be placed on the `WorkRequest` that require certain conditions are met before the work runs. One example is that the device is charging before starting the requested work. You pass in your CoroutineWorker as part of creating your `WorkRequest`.
+* `WorkManager`: This class actually schedules your `WorkRequest` and makes it run. It schedules a `WorkRequest` in a way that spreads out the load on system resources, while honoring the constraints you specify.
+
+In your case, you define a new `BlurWorker` class, which contains the code to blur an image. When you click the **Start** button, WorkManager creates and then enqueues a `WorkRequest` object.
+
 # Android quizzes (lvl: Beginner)
 
 ## Unit 1:
@@ -2612,3 +2648,58 @@ val colors = listOf("Red", "Green", "Blue")
    - 🟢 IOException 🟢
    - IllegalStateException
    - NumberFormatException
+## Unit 7:
+### Schedule tasks with WorkManager(quiz 1)
+1. Which tool helps you visualize, monitor, and debug your app's workers?
+   - Profiler
+   - 🟢 Background Task Inspector 🟢
+   - Logcat
+   - Device Manager
+
+2. Which of the following options are valid terminal work states? *(Choose all that apply)*
+   - 🟢 CANCELLED 🟢
+   - DELETED
+   - 🟢 FAILED 🟢
+   - 🟢 SUCCEEDED 🟢
+
+3. Which of the following options are valid types of work requests? *(Choose all that apply)*
+   - 🟢 OneTimeWorkRequest 🟢
+   - SingleWorkRequest
+   - RepeatingWorkRequest
+   - 🟢 PeriodicWorkRequest 🟢
+
+4. Creating and enqueueing multiple dependent tasks and the order they should run in is called linking.
+   - True
+   - 🟢 False 🟢
+
+5. Work constraints are useful in which of the following situations?
+   - Checking that a valid form of payment is saved on the user’s device before the work runs.
+   - Checking what time it is before the work runs.
+   - 🟢 Checking that the device is connected to a WiFi network before downloading a large amount of app data. 🟢
+   - Checking that the app was opened a set number of times before the work runs.
+
+6. Which of the following options is a way to pass input data to a worker?
+   - Pass the data in as an argument when calling the `doWork()` function.
+   - 🟢 Use a `Data` object to pass key/value pairs. 🟢
+   - Pass data as a `String`, but it must be less than 140 characters.
+   - Assign it to the `worker.inputData` variable.
+
+7. After work is enqueued, you can check its status by: *(Choose all that apply)*
+   - 🟢 Name 🟢
+   - 🟢 Id 🟢
+   - 🟢 Tag 🟢
+   - Work type
+
+8. The Background Task Inspector lets you stop workers during their execution.
+   - 🟢 True 🟢
+   - False
+
+9. Which worker builder is recommended to test `CoroutineWorker`?
+   - OneTimeWorkRequestBuilder
+   - PeriodicWorkRequestBuilder
+   - TestWorkerBuilder
+   - 🟢 TestListenableWorkerBuilder 🟢
+
+10. When testing worker implementations, you can call workers directly with `doWork()` instead of enqueuing the worker.
+   - 🟢 True 🟢
+   - False
