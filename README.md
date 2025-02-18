@@ -47,6 +47,9 @@ This is a guie brown whit the propose to help me and others when you need to rev
     - [Use Room for data persistence](#Use-Room-for-data-persistence)
     - [Store and access data using keys with DataStore](#Store-and-access-data-using-keys-with-DataStore)
   - [Unit 7: Schedule tasks with WorkManager](#Unit-7:-Schedule-tasks-with-WorkManager)
+  - [Unit 8: Views and Compose](#Unit-8:-Views-and-Compose)
+    - [Android Views and Compose in Views](#Android-Views-and-Compose-in-Views)
+    - [Views in Compose](#Views-in-Compose)
 
 - [Android quizzes (lvl: Beginner)](#Android-quizzes-(lvl:-Beginner))
 
@@ -80,6 +83,9 @@ This is a guie brown whit the propose to help me and others when you need to rev
     -[Store and access data using keys with DataStore(quiz 3)](#Store-and-access-data-using-keys-with-DataStore(quiz-3))
   - [Unit 7:](#Unit-7:)
      - [Schedule tasks with WorkManager(quiz 1)](#Schedule-tasks-with-WorkManager(quiz-1))
+  - [Unit 8:](#Unit-8:)
+    - [Android Views and Compose in Views(quiz 1)](#Android-Views-and-Compose-in-Views(quiz-1))
+    - [Views in Compose(quiz 2)](#Views-in-Compose(quiz-2))
 
 # Android Basics with Compose (lvl: Beginner)
 
@@ -2703,3 +2709,80 @@ val colors = listOf("Red", "Green", "Blue")
 10. When testing worker implementations, you can call workers directly with `doWork()` instead of enqueuing the worker.
    - 🟢 True 🟢
    - False
+
+## Unit 8:
+### Android Views and Compose in Views(quiz 1)
+1. Which language is used to build View layouts?
+   - HTML
+   - Kotlin
+   - 🟢 XML 🟢
+   - Java
+
+2. When building an app with Views, the concept of a Composable 'screen' should be replaced by which of the following?
+   - 🟢 Fragment 🟢
+   - ViewModel
+   - Composable
+   - Activity
+
+3. View Bindings are used to access and interact with XML declared Views.
+   - 🟢 True 🟢
+
+4. In which Fragment lifecycle method is the View Binding inflated?
+   - `onViewCreated()`
+   - 🟢 `onCreateView()` 🟢
+   - `onStart()`
+   - `onResume()`
+
+5. View components can be accessed before the View Binding has been inflated.
+   - 🟢 False 🟢
+
+6. A `ComposeView` is a(n):
+   - View that can host an Android View inside a Compose UI.
+   - 🟢 Android view that can host Jetpack Compose UI content inside a View layout. 🟢
+   - Android view that can host an Android View inside a View layout.
+   - View that can host Compose UI inside a Compose UI.
+
+7. Jetpack Compose and the View system can co-exist in your codebase.
+   - 🟢 True 🟢
+
+8. The `ComposeView` uses its ___ method to display Compose elements on the screen.
+   - `Composable()`
+   - 🟢 `setContent()` 🟢
+   - `setComposeContent()`
+   - `displayComposable()`
+
+9. Jetpack Compose was designed with View interoperability right from the start.
+   - 🟢 True 🟢
+
+10. The flag that enables Android Studio to work with Compose is the:
+   - In project-level use `buildFeatures { compose true }`
+   - 🟢 In app-level use `buildFeatures { compose true }` 🟢
+   - In project-level use `buildFeatures { enableCompose true }`
+   - In app-level use `buildFeatures { enableCompose true }`
+### Views in Compose(quiz 2)
+### Quiz: View Interop en Jetpack Compose
+1. Which Composable is used to implement a View Interop?
+   - `InputRow`
+   - `Column`
+   - `TextInputRow`
+   - 🟢 `AndroidView` 🟢
+
+2. What is an `AndroidView`?
+   - 🟢 A Composable that hosts a View element or hierarchy 🟢
+   - An Android View that hosts Jetpack Compose UI content inside a View layout
+   - An Android View that hosts an Android View inside a View layout
+   - A Compose View that hosts Jetpack Compose UI content inside a Compose UI
+
+3. Which of the following are parameters of the `AndroidView` Composable?
+   - 🟢 `factory` 🟢
+   - `inputLabel`
+   - 🟢 `update` 🟢
+   - 🟢 `modifier` 🟢
+
+4. The `update` callback of the `AndroidView` Composable is called after the corresponding View is inflated.
+   - 🟢 True 🟢
+
+5. What is the function of the `factory` lambda of the `AndroidView` Composable?
+   - Decorates and augments the AndroidView Composable
+   - Executes code after the View is inflated
+   - 🟢 Creates the View 🟢
